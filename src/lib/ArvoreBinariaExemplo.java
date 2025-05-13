@@ -36,7 +36,7 @@ public class ArvoreBinariaExemplo<T> implements IArvoreBinaria<T> {
     private void adicionar(No<T> r, No<T> n) {
 
         if(r != null) {
-            if(this.comparador.compare(r.getValor(), n.getValor()) == 1) {
+            if(this.comparador.compare(r.getValor(), n.getValor()) >= 1) {
                 if(r.getFilhoEsquerda() != null) {
                     adicionar(r.getFilhoEsquerda(), n);
 
@@ -66,7 +66,7 @@ public class ArvoreBinariaExemplo<T> implements IArvoreBinaria<T> {
 
         while(b) {
             //verifica se o valor da raiz eh maior que o valor do no a ser inserido
-            if(this.comparador.compare(r.getValor(), n.getValor()) == 1) {
+            if(this.comparador.compare(r.getValor(), n.getValor()) >= 1) {
 
                 //se o valor do no a ser inserido for menor, verifica se o filho a esquerda da raiz eh null
                 if(r.getFilhoEsquerda() == null) {
@@ -117,7 +117,7 @@ public class ArvoreBinariaExemplo<T> implements IArvoreBinaria<T> {
             return r.getValor();
         }
 
-        else if(c.compare(r.getValor(), v) == 1) {
+        else if(c.compare(r.getValor(), v) >= 1) {
             return pesquisar(r.getFilhoEsquerda(), v, c);
         }
 
@@ -143,13 +143,13 @@ public class ArvoreBinariaExemplo<T> implements IArvoreBinaria<T> {
         }
 
         //verifica se o valor a ser procurado eh menor que a atual raiz
-        else if(this.comparador.compare(r.getValor(), v) == 1) {
+        else if(this.comparador.compare(r.getValor(), v) >= 1) {
             //se for, chama recursivamente, passando a nova raiz da subarvore da esquerda 
             return remover(r, r.getFilhoEsquerda(), v, -1);
         }
 
         //verifica se o valor a ser procurado eh maior que a atual raiz
-        else if(this.comparador.compare(r.getValor(), v) == -1) {
+        else if(this.comparador.compare(r.getValor(), v) < 0) {
             //se for, chama recursivamente, passando a nova raiz da subarvore da direita 
             return remover(r, r.getFilhoDireita(), v, 1);
         }
