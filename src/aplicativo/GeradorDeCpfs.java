@@ -10,7 +10,7 @@ public class GeradorDeCpfs{
         this.quantidade = q;
     }
 
-    public void guardaCpfs(ArvoreBinariaExemplo<Cpf> arv) {
+    public void guardaCpfs(IArvoreBinaria<Cpf> arv) {
         Random gerador = new Random();
         int i = 0;
     

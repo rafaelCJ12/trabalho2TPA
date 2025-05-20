@@ -1,14 +1,15 @@
 package aplicativo;
 
+import lib.ArvoreAVLExemplo;
 import lib.ArvoreBinariaExemplo;
-//import app.*;
+import app.*;
 import lib.IArvoreBinaria;
 
 import java.util.Comparator;
 
 public class Main {
 
-    private static void buscaCpf(Cpf c, ArvoreBinariaExemplo<Cpf> arv, Entrada e) {
+    private static void buscaCpf(Cpf c, IArvoreBinaria<Cpf> arv, Entrada e) {
         String s;
 
         try {
@@ -33,7 +34,7 @@ public class Main {
 
     }
 
-    private static void removeCpfArvore(Cpf c, ArvoreBinariaExemplo<Cpf> arv, Entrada e) {
+    private static void removeCpfArvore(Cpf c, IArvoreBinaria<Cpf> arv, Entrada e) {
         String s;
 
         try {
@@ -57,7 +58,7 @@ public class Main {
 
     }
 
-    private static void adicionaCpf(ArvoreBinariaExemplo<Cpf> arv, Entrada e) {
+    private static void adicionaCpf(IArvoreBinaria<Cpf> arv, Entrada e) {
         String s = "";
         Cpf c = new Cpf(s);
 
@@ -67,6 +68,7 @@ public class Main {
             
             if(c.numeroValido(s)) {
                 arv.adicionar(c);
+                System.out.println("Cpf adicionado.");
             }
 
             else{
@@ -80,7 +82,7 @@ public class Main {
         
     }
 
-    private static void menu(Cpf c, ArvoreBinariaExemplo<Cpf> arv, Entrada e) {
+    private static void menu(Cpf c, IArvoreBinaria<Cpf> arv, Entrada e) {
         int opcao = -1;
 
         while(opcao != 0) {
@@ -101,6 +103,7 @@ public class Main {
                         break;
                     case 4:
                         System.out.println(arv.caminharEmOrdem());
+                        System.out.println("Altura da arvore: "+arv.altura());
                         break;
                 
                     default:
@@ -119,28 +122,16 @@ public class Main {
     }
     
     public static void main(String[] args) {
-        int q = 0;
         Entrada e = new Entrada();
-        GeradorDeCpfs g = null;
-        ComparadorNumeroIdentificador c = new ComparadorNumeroIdentificador();
-        ArvoreBinariaExemplo<Cpf> arv = new ArvoreBinariaExemplo<Cpf>(c);
-        Cpf cpf = new Cpf("");
+        ComparadorAlunoPorMatricula c = new ComparadorAlunoPorMatricula();
+        IArvoreBinaria<Aluno> arv = new ArvoreBinariaExemplo<Aluno>(c);
+        GeradorDeArvores g = new GeradorDeArvores();
 
-        try{
-            q = e.lerInteiro("Digite a quantidade de cpf's que deseja gerar: ");
-            g = new GeradorDeCpfs(q);
-            
-            g.guardaCpfs(arv);
+        g.geraArvorePerfeitamenteBalanceada(1, 8, arv);
 
-
-        }
-
-        catch(NumberFormatException x) {
-            System.out.println("Valor invalido!");
-
-        }
-
-        menu(cpf, arv, e);
+        System.out.println(arv.caminharEmOrdem());
+       
         
     }
+
 }
