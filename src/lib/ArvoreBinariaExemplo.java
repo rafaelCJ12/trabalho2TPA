@@ -7,6 +7,8 @@ package lib;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.Queue;
 
 /**
  *
@@ -30,38 +32,40 @@ public class ArvoreBinariaExemplo<T> implements IArvoreBinaria<T> {
             return;
         }
         
-        adicionarI(this.raiz, novoNo);
+       this.adicionarI(this.raiz, novoNo);
     }
     
-    private void adicionar(No<T> r, No<T> n) {
+    protected No<T> adicionar(No<T> r, No<T> n) {
 
         if(r != null) {
-            if(this.comparador.compare(r.getValor(), n.getValor()) >= 1) {
-                if(r.getFilhoEsquerda() != null) {
-                    adicionar(r.getFilhoEsquerda(), n);
+            if(this.comparador.compare(n.getValor(), r.getValor()) < 0) {
+                if(r.getFilhoEsquerda() == null) {
+                    r.setFilhoEsquerda(n);
 
                 }
                 else{
-                    r.setFilhoEsquerda(n);
+                    r.setFilhoEsquerda(this.adicionar(r.getFilhoEsquerda(), n));
                 }
               
             }
 
             else{
-                if(r.getFilhoDireita() != null) {
-                    adicionar(r.getFilhoDireita(), n);
+                if(r.getFilhoDireita() == null) {
+                    r.setFilhoDireita(n);
 
                 }
                 else{
-                    r.setFilhoDireita(n);
+                    r.setFilhoDireita(this.adicionar(r.getFilhoDireita(), n));
                 }
             }
 
         }
 
+        return r;
+
     }
 
-    private void adicionarI(No<T> r, No<T> n) {
+    protected void adicionarI(No<T> r, No<T> n) {
         Boolean b = true;
 
         while(b) {
@@ -130,110 +134,75 @@ public class ArvoreBinariaExemplo<T> implements IArvoreBinaria<T> {
 
     @Override
     public T remover(T valor) {
-        return remover(null, this.raiz, valor, 0);
+        T x = this.pesquisar(valor);
+        this.raiz = remover(this.raiz, valor);
+        return x;
     }
 
-    private T remover(No<T> pai, No<T> r, T v, int tipoR) {
+    protected No<T> remover( No<T> r, T v) {
         No<T> aux = null;
-        T x = null;
-
-        //vai entar aqui se o valor a ser removido nao esta na arvore
         if(r == null) {
             return null;
         }
 
-        //verifica se o valor a ser procurado eh menor que a atual raiz
-        else if(this.comparador.compare(r.getValor(), v) >= 1) {
-            //se for, chama recursivamente, passando a nova raiz da subarvore da esquerda 
-            return remover(r, r.getFilhoEsquerda(), v, -1);
-        }
-
-        //verifica se o valor a ser procurado eh maior que a atual raiz
-        else if(this.comparador.compare(r.getValor(), v) < 0) {
-            //se for, chama recursivamente, passando a nova raiz da subarvore da direita 
-            return remover(r, r.getFilhoDireita(), v, 1);
-        }
-
-        //se o valor a ser removido nao for maior nem menor que a raiz, entao esse valor eh igual a propria raiz
         else{
-            x = r.getValor(); //usa a variavel auxilir para guardar o valor a ser removido
-
-            //verifica se r eh uma folha
-            if(r.getFilhoEsquerda() == null && r.getFilhoDireita() == null) {
-                //verifica se r eh um filho a esquerda
-                if(tipoR == -1) {
-                    //se r for um filho a esquerda, entao o no esquerdo do pai apontara para null
-                    pai.setFilhoEsquerda(null);
+            if(this.comparador.compare(r.getValor(), v) == 0) {
+                if(r.getFilhoEsquerda() == null && r.getFilhoDireita() == null) {
+                    return null;
                 }
 
-                else if(tipoR == 1) {
-                    //se r for um filho a direita, o no direito do pai apontara para null
-                    pai.setFilhoDireita(null);
-                }
-            }
-
-            //verifica se r so tem filho na direita
-            else if(r.getFilhoEsquerda() == null) {
-                //verifica se r nao eh a raiz da arvore
-                if(pai != null) {
-                    //se r nao for a raiz da arvore, entao o no direito do pai sera o no direito de r
-                    pai.setFilhoDireita(r.getFilhoDireita());
-                    r = null;
-                }
-
-                //se o pai for null, entao r eh a raiz da arvore
                 else{
-                    //como r eh a raiz da arvore entao a raiz sera o filho a direita de r
-                    this.raiz = r.getFilhoDireita();
-                    r = null;
+                    if(r.getFilhoEsquerda() != null && r.getFilhoDireita() != null) {
+                        aux = r.getFilhoEsquerda();
+
+                        while(aux.getFilhoDireita() != null) {
+                            aux = aux.getFilhoDireita();
+                        }
+
+                        r.setValor(aux.getValor());
+
+                        aux.setValor(v);
+
+                        r.setFilhoEsquerda(remover(r.getFilhoEsquerda(), v));
+                        return r;
+                    }
+
+                    else{
+                        if(r.getFilhoEsquerda() != null) {
+                            aux = r.getFilhoEsquerda();
+                        }
+
+                        else{
+                            aux = r.getFilhoDireita();
+                        }
+
+                        return aux;
+                    }
                 }
             }
 
-            //verifica se r so tem filho na esquerda
-            else if(r.getFilhoDireita() == null) {
-                //verifica se r nao eh a raiz da arvore
-                if(pai != null) {
-                    //se r nao for a raiz da arvore, entao o no esquerdo do pai sera o no esquerdo de r
-                    pai.setFilhoEsquerda(r.getFilhoEsquerda());
-                    r = null;
-                }
-
-                //se o pai for null, entao r eh a raiz da arvore
-                else{
-                    //como r eh a raiz da arvore entao a raiz sera o filho a esquerda de r
-                    this.raiz = r.getFilhoEsquerda();
-                }
-            }
-
-            //entrara aqui se r tiver dois filhos
             else{
-                //aqui comeca a busca pelo maior elemento da subarvore da esquerda
-                aux = r.getFilhoEsquerda();
-
-                while(aux.getFilhoDireita() != null) {
-                    aux = aux.getFilhoDireita();
+                if(this.comparador.compare(r.getValor(), v) >= 1) {
+                    r.setFilhoEsquerda(remover(r.getFilhoEsquerda(), v));
                 }
-                //fim da busca
-                
-                r.setValor(aux.getValor()); //r tera como valor o maior elemento da subarvore da esquerda
-                aux.setValor(v); //o valor de aux agora sera o elemento a ser removido, que agora estara em um no folha
 
-                //o filho a esquerda de r sera o maior elemento da arvore,
-                r.getFilhoEsquerda().setValor(remover(r, r.getFilhoEsquerda(), v, -1)); 
+                else{
+                    r.setFilhoDireita(remover(r.getFilhoDireita(), v));
+                }
             }
 
-            return x;
-
+            return r;
         }
+
     }
 
     @Override
     public int altura() {
-        return altura(this.raiz);
+        return alturaI(this.raiz);
 
     }
 
-    private int altura(No<T> r) {
+    protected int altura(No<T> r) {
         int esq = 0;
         int dir = 0;
 
@@ -249,6 +218,48 @@ public class ArvoreBinariaExemplo<T> implements IArvoreBinaria<T> {
         }
 
         return dir + 1;
+
+    }
+
+    private int alturaI(No<T> r) {
+        int altura = 0;
+        Queue<No<T>> q = new LinkedList<>();
+        No<T> aux = null;
+        int i = 0;
+        
+        if(r == null) {
+            return -1;
+        }
+        
+        q.add(r);
+
+        while(true) {
+            i = q.size();
+
+            if(i == 0) {
+                return altura - 1;
+            }
+
+            altura++;
+
+            while (i > 0) {
+                aux = q.poll();
+
+                if(aux != null) {
+                    if(aux.getFilhoEsquerda() != null) {
+                        q.add(aux.getFilhoEsquerda());
+                    }
+
+                    if(aux.getFilhoDireita() != null) {
+                        q.add(aux.getFilhoDireita());
+                    }
+                }
+
+                i--;
+
+            }
+
+        }
 
     }
 
@@ -283,7 +294,7 @@ public class ArvoreBinariaExemplo<T> implements IArvoreBinaria<T> {
     private String caminharEmOrdem(No<T> r, String s) {
 
         if(r != null) {
-            s += caminharEmOrdem(r.getFilhoEsquerda(), s) + r.getValor().toString() + ", " + caminharEmOrdem(r.getFilhoDireita(), s);
+            s = caminharEmOrdem(r.getFilhoEsquerda(), s) + r.getValor().toString() + ", " + caminharEmOrdem(r.getFilhoDireita(), s);
         }
         return s;
 
