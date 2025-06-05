@@ -121,17 +121,31 @@ public class Main {
 
     }
     
-    public static void main(String[] args) {
+   public static void main(String[] args) {
+        int q = 0;
         Entrada e = new Entrada();
-        ComparadorAlunoPorMatricula c = new ComparadorAlunoPorMatricula();
-        IArvoreBinaria<Aluno> arv = new ArvoreBinariaExemplo<Aluno>(c);
-        GeradorDeArvores g = new GeradorDeArvores();
+        GeradorDeCpfs g = null;
+        ComparadorNumeroIdentificador c = new ComparadorNumeroIdentificador();
+        IArvoreBinaria<Cpf> arv = new ArvoreAVLExemplo<Cpf>(c);
+        Cpf cpf = new Cpf("");
 
-        g.geraArvorePerfeitamenteBalanceada(1, 8, arv);
+        try{
+            q = e.lerInteiro("Digite a quantidade de cpf's que deseja gerar: ");
+            g = new GeradorDeCpfs(q);
+            
+            g.guardaCpfs(arv);
 
-        System.out.println(arv.caminharEmOrdem());
-       
+
+        }
+
+        catch(NumberFormatException x) {
+            System.out.println("Valor invalido!");
+
+        }
+
+        menu(cpf, arv, e);
         
     }
+
 
 }
